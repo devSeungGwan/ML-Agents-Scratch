@@ -16,17 +16,19 @@ public class RollarAgent : Agent
     public override void OnEpisodeBegin()
     {
        // If the Agent fell, zero its momentum
-        if (this.transform.localPosition.y < -5)
+        if (this.transform.localPosition.y < 0)
         {
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
             this.transform.localPosition = new Vector3( 0, 0.5f, 0);
+
+            
         }
 
         // Move the target to a new spot
         Target.localPosition = new Vector3(Random.value * 8 - 4,
-                                           0.5f,
-                                           Random.value * 8 - 4);
+                                            0.5f,
+                                            Random.value * 8 - 4);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -39,6 +41,7 @@ public class RollarAgent : Agent
         sensor.AddObservation(rBody.velocity.x);
         sensor.AddObservation(rBody.velocity.z);
     }
+    
     public float forceMultiplier = 10;
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -61,15 +64,8 @@ public class RollarAgent : Agent
         // Fell off platform
         else if (this.transform.localPosition.y < 0)
         {
+            SetReward(-3.0f);
             EndEpisode();
         }
     }
-
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        var continuousActionsOut = actionsOut.ContinuousActions;
-        continuousActionsOut[0] = Input.GetAxis("Horizontal");
-        continuousActionsOut[1] = Input.GetAxis("Vertical");
-    }
-
 }
